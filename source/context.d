@@ -9,6 +9,16 @@ import dgs.cmdbuffer : DrawCmdBuffer;
 import dgs.layoutbox : LayoutBox;
 import dgs.backend : Backend;
 
+enum MouseButton { Left, Middle, Right, }
+
+struct Input
+{
+	import std.traits : EnumMembers;
+
+	Vec2 mousePos;
+	bool[EnumMembers!MouseButton.length] down;
+}
+
 class Context
 {
 	LayoutBox[uint] layout_boxes;
@@ -17,6 +27,7 @@ class Context
 	int layout_tick;
 	bool layout_invalidated;
 	protected DrawCmdBuffer _drawlist;
+	Input input;
 
 	this()
 	{
@@ -98,49 +109,6 @@ class Context
 		distributor(lo, hi, children.map!"a.x").writeln;
 		children ~= Vec2(30);
 		distributor(lo, hi, children.map!"a.x").writeln;
-
-		// void begin()
-		// {
-		// 	auto distance = hi - lo;
-		// 	auto excess = max(0, distance - preferred);
-		// 	auto spacing = children.length > 1 ? excess / (children.length - 1) : 0;
-
-		// 	writeln("===");
-		// 	writefln("%s - %s (prefer: %s, excess: %s, spacing: %s)", lo, hi, preferred, excess, spacing);
-		// 	auto x = lo;
-		// 	writeln(x);
-		// 	foreach(child; children)
-		// 	{
-		// 		auto x2 = x + child.x;
-		// 		x = x2 + spacing;
-		// 		writeln(x);//, " x2: ", x2);
-		// 	}
-		// 	writeln;
-		// }
-
-		// void end()
-		// {
-		// 	preferred = 0;
-		// 	foreach(child; children)
-		// 		preferred += child.x;
-		// }
-
-		// begin;
-		// end;
-
-		// children ~= Vec2(30);
-		// children ~= Vec2(30);
-
-		// begin;
-		// end;
-
-		// begin;
-
-		// children ~= Vec2(30);
-		// children ~= Vec2(30);
-		// end;
-
-		// begin;
 	}
 
 	void beginVBox(uint id)

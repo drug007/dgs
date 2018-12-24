@@ -45,7 +45,14 @@ class UI : Context
 		BBox2 r = box.assigned;
 		r.max.x = min(r.max.x, r.min.x + w.width);
 		r.max.y = min(r.max.y, r.min.y + w.height);
-		drawFillRect(r, w.color);
+		if (r.contains(input.mousePos))
+		{
+			import dgs.context : MouseButton;
+			ubyte red =  input.down[MouseButton.Left] ? 255 : 127;
+			drawFillRect(r, Color(red, 127, 127, 255));
+		}
+		else
+			drawFillRect(r, w.color);
 		box.desired = Vec2(w.width, w.height);
 		endLayoutBox();
 	}
@@ -93,6 +100,60 @@ int main(string[] args)
 
 	for (;;) {
 		SDL_Event event;
+
+		// mouse update
+		{
+			SDL_PumpEvents();
+
+			while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEWHEEL))
+			{
+				import dgs.context : MouseButton;
+
+				switch (event.type)
+				{
+				case SDL_MOUSEBUTTONDOWN:
+					switch(event.button.button)
+					{
+						case SDL_BUTTON_LEFT:
+							ui.input.down[MouseButton.Left  ] = true;
+						break;
+						case SDL_BUTTON_MIDDLE:
+							ui.input.down[MouseButton.Middle] = true;
+						break;
+						case SDL_BUTTON_RIGHT:
+							ui.input.down[MouseButton.Right ] = true;
+						break;
+						default:
+					}
+					break;
+				case SDL_MOUSEBUTTONUP:
+					switch(event.button.button)
+					{
+						case SDL_BUTTON_LEFT:
+							ui.input.down[MouseButton.Left  ] = false;
+						break;
+						case SDL_BUTTON_MIDDLE:
+							ui.input.down[MouseButton.Middle] = false;
+						break;
+						case SDL_BUTTON_RIGHT:
+							ui.input.down[MouseButton.Right ] = false;
+						break;
+						default:
+					}
+					break;
+				case SDL_MOUSEMOTION:
+					ui.input.mousePos = Vec2(event.motion.x, event.motion.y);
+					ui.input.down[MouseButton.Left  ] = (event.motion.state & SDL_BUTTON_LMASK) != 0;
+					ui.input.down[MouseButton.Middle] = (event.motion.state & SDL_BUTTON_MMASK) != 0;
+					ui.input.down[MouseButton.Right ] = (event.motion.state & SDL_BUTTON_RMASK) != 0;
+					break;
+				case SDL_MOUSEWHEEL:
+					break;
+				default:
+				}
+			}
+		}
+
 		while (SDL_PollEvent(&event))
 		{
 			switch (event.type)
