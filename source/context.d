@@ -23,7 +23,7 @@ class Context
 {
 	LayoutBox[uint] layout_boxes;
 	Array!LayoutBox layout_stack;
-	LayoutBox box;
+	Array!LayoutBox box;
 	int layout_tick;
 	bool layout_invalidated;
 	protected DrawCmdBuffer _drawlist;
@@ -32,6 +32,7 @@ class Context
 	this()
 	{
 		layout_tick = 1;
+		box.insert(null);
 	}
 
 	LayoutBox getLayoutBox(uint id)
@@ -46,19 +47,19 @@ class Context
 	void beginLayoutBox(uint id)
 	{
 		auto new_box = getLayoutBox(id);
-		if (box)
-			box.children.insertBack(new_box);
+		if (box.front)
+			box.front.children.insertBack(new_box);
 
-		layout_stack.insertBack(box);
-		box = new_box;
-		if (box.last_assigned != layout_tick)
-			box.assigned = BBox2();
+		layout_stack.insertBack(box.front);
+		box.front = new_box;
+		if (box.front.last_assigned != layout_tick)
+			box.front.assigned = BBox2();
 	}
 
 	void endLayoutBox()
 	{
-		_drawlist.strokeRect(box.assigned, Color(0xFF, 0xFF, 0xFF, 0xFF), 10.0f, 1.0f);
-		box = layout_stack[layout_stack.length - 1];
+		_drawlist.strokeRect(box.front.assigned, Color(0xFF, 0xFF, 0xFF, 0xFF), 10.0f, 1.0f);
+		box.front = layout_stack[layout_stack.length - 1];
 		layout_stack.removeBack();
 	}
 
@@ -67,28 +68,28 @@ class Context
 		import std.algorithm;
 
 		beginLayoutBox(id);
-		auto d = distributor(box.assigned.min.x, box.assigned.max.x, box.children[].map!"a.desired.x");
-		foreach (child; box.children)
+		auto d = distributor(box.front.assigned.min.x, box.front.assigned.max.x, box.front.children[].map!"a.desired.x");
+		foreach (child; box.front.children)
 		{
 			auto x1 = cast(int) d.front[0];
 			auto x2 = cast(int) d.front[1];
-			auto y1 = max(box.assigned.min.y, box.assigned.max.y - child.desired.y);
-			auto y2 = box.assigned.max.y;
+			auto y1 = max(box.front.assigned.min.y, box.front.assigned.max.y - child.desired.y);
+			auto y2 = box.front.assigned.max.y;
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
 			d.popFront;
 		}
-		box.children.clear();
+		box.front.children.clear();
 	}
 
 	void endHBox()
 	{
 		Vec2 desired;
-		foreach (child; box.children)
+		foreach (child; box.front.children)
 		{
 			desired.x += child.desired.x;
 			desired.y = max(desired.y, child.desired.y);
 		}
-		box.desired = desired;
+		box.front.desired = desired;
 		endLayoutBox();
 	}
 
@@ -120,28 +121,28 @@ class Context
 		import std.algorithm;
 
 		beginLayoutBox(id);
-		auto d = distributor(box.assigned.min.y, box.assigned.max.y, box.children[].map!"a.desired.y");
-		foreach (child; box.children)
+		auto d = distributor(box.front.assigned.min.y, box.front.assigned.max.y, box.front.children[].map!"a.desired.y");
+		foreach (child; box.front.children)
 		{
 			auto y1 = cast(int) d.front[0];
 			auto y2 = cast(int) d.front[1];
-			auto x1 = box.assigned.min.x;
-			auto x2 = min(box.assigned.max.x, box.assigned.min.x + child.desired.x);
+			auto x1 = box.front.assigned.min.x;
+			auto x2 = min(box.front.assigned.max.x, box.front.assigned.min.x + child.desired.x);
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
 			d.popFront;
 		}
-		box.children.clear();
+		box.front.children.clear();
 	}
 
 	void endVBox()
 	{
 		Vec2 desired;
-		foreach (child; box.children)
+		foreach (child; box.front.children)
 		{
 			desired.y = max(desired.y, child.desired.y);
 			desired.x += child.desired.x;
 		}
-		box.desired = desired;
+		box.front.desired = desired;
 		endLayoutBox();
 	}
 
