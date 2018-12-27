@@ -125,8 +125,8 @@ class Context
 		{
 			auto y1 = cast(int) d.front[0];
 			auto y2 = cast(int) d.front[1];
-			auto x1 = max(box.assigned.min.x, box.assigned.max.x - child.desired.x);
-			auto x2 = box.assigned.max.x;
+			auto x1 = box.assigned.min.x;
+			auto x2 = min(box.assigned.max.x, box.assigned.min.x + child.desired.x);
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
 			d.popFront;
 		}
