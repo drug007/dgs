@@ -15,7 +15,7 @@ struct Input
 {
 	import std.traits : EnumMembers;
 
-	Vec2 mousePos;
+	Vec2 mousePos, delta;
 	bool[EnumMembers!MouseButton.length] down;
 }
 

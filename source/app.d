@@ -143,6 +143,7 @@ int main(string[] args)
 					break;
 				case SDL_MOUSEMOTION:
 					ui.input.mousePos = Vec2(event.motion.x, event.motion.y);
+					ui.input.delta = Vec2(event.motion.xrel, event.motion.yrel);
 					ui.input.down[MouseButton.Left  ] = (event.motion.state & SDL_BUTTON_LMASK) != 0;
 					ui.input.down[MouseButton.Middle] = (event.motion.state & SDL_BUTTON_MMASK) != 0;
 					ui.input.down[MouseButton.Right ] = (event.motion.state & SDL_BUTTON_RMASK) != 0;
