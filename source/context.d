@@ -47,6 +47,7 @@ class Context
 	void beginLayoutBox(uint id)
 	{
 		auto new_box = getLayoutBox(id);
+		// if parent box exists add new_box as a child to it
 		if (box.front)
 			box.front.children.insertBack(new_box);
 
@@ -66,6 +67,8 @@ class Context
 	void beginHBox(uint id)
 	{
 		import std.algorithm;
+
+		box.insert(null);
 
 		beginLayoutBox(id);
 		auto d = distributor(box.front.assigned.min.x, box.front.assigned.max.x, box.front.children[].map!"a.desired.x");
@@ -91,6 +94,8 @@ class Context
 		}
 		box.front.desired = desired;
 		endLayoutBox();
+
+		box.removeAny;
 	}
 
 	unittest

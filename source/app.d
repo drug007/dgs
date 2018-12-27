@@ -42,7 +42,8 @@ class UI : Context
 	{
 		import std.algorithm : min, max;
 		beginLayoutBox(id);
-		BBox2 r = box.assigned;
+		assert(!box.empty);
+		BBox2 r = box.front.assigned;
 		r.max.x = min(r.max.x, r.min.x + w.width);
 		r.max.y = min(r.max.y, r.min.y + w.height);
 		if (r.contains(input.mousePos))
@@ -53,7 +54,7 @@ class UI : Context
 		}
 		else
 			drawFillRect(r, w.color);
-		box.desired = Vec2(w.width, w.height);
+		box.front.desired = Vec2(w.width, w.height);
 		endLayoutBox();
 	}
 
@@ -63,9 +64,15 @@ class UI : Context
 		root.assigned = BBox2(Vec2(50, 50), Vec2(500, 400));
 
 		beginVBox(0);
-		if (w1.visible) leaf(1, w1);
+		beginHBox(4);
+		if (w1.visible)
+		{
+			
+			leaf(1, w1);
+		}
 		if (w2.visible) leaf(2, w2);
 		if (w3.visible) leaf(3, w3);
+		endHBox();
 		endVBox();
 	}
 }
