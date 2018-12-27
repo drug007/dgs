@@ -138,8 +138,8 @@ class Context
 		Vec2 desired;
 		foreach (child; box.children)
 		{
-			desired.y += child.desired.y;
-			desired.x = max(desired.x, child.desired.x);
+			desired.y = max(desired.y, child.desired.y);
+			desired.x += child.desired.x;
 		}
 		box.desired = desired;
 		endLayoutBox();
