@@ -106,9 +106,13 @@ class Context
 		distributor(lo, hi, children.map!"a.x").writeln;
 
 		children ~= Vec2(30);
+		distributorBackward(lo, hi, children.map!"a.x").writeln;
 		distributor(lo, hi, children.map!"a.x").writeln;
 		children ~= Vec2(30);
+		distributorBackward(lo, hi, children.map!"a.x").writeln;
 		distributor(lo, hi, children.map!"a.x").writeln;
+		children ~= Vec2(30);
+		distributorBackward(lo, hi, children.map!"a.x").writeln;
 	}
 
 	void beginVBox(uint id)
@@ -162,6 +166,11 @@ auto distributor(Children)(double l, double h, Children children)
 	return Distributor!Children(l, h, children);
 }
 
+auto distributorBackward(Children)(double l, double h, Children children)
+{
+	return DistributorBackward!Children(l, h, children);
+}
+
 struct Distributor(Children)
 {
     import std.algorithm, std.typecons;
@@ -189,6 +198,42 @@ struct Distributor(Children)
         import std.array;
         value = min(hi, value + children.front + spacing);
         children.popFront;
+    }
+    
+    bool empty()
+    {
+        import std.array;
+        return children.empty;
+    }
+}
+
+struct DistributorBackward(Children)
+{
+    import std.algorithm, std.typecons;
+    double value, lo, hi, preferred, spacing;
+    Children children;
+
+    this(double l, double h, Children ch)
+    {
+        value = h;
+        lo = l;
+        hi = h;
+        preferred = ch.sum;
+        children = ch;
+        auto excess = max(0, (hi - lo) - preferred);
+        spacing = children.length > 1 ? excess / (children.length - 1) : 0;
+    }
+
+    auto front()
+    {
+        return tuple(min(value - children.back, hi), value);
+    }
+    
+    void popFront()
+    {
+        import std.array;
+        value = max(lo, value - children.back - spacing);
+        children.popBack;
     }
     
     bool empty()
