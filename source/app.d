@@ -43,8 +43,8 @@ class UI : Context
 		import std.algorithm : min, max;
 		beginLayoutBox(id);
 		BBox2 r = box.assigned;
-import std.stdio;
-writeln(id, " ", r);
+// import std.stdio;
+// writeln(id, " ", r);
 		r.max.x = min(r.max.x, r.min.x + w.width);
 		r.max.y = min(r.max.y, r.min.y + w.height);
 		if (r.contains(input.mousePos))
@@ -229,7 +229,9 @@ int main(string[] args)
 		window.swapBuffers();
 
 		static size_t counter;
-		if (counter++ > 3)
-			return 0;
+		// if (counter++ > 3)
+		// 	return 0;
+		import std.stdio;
+		writeln("-------------------------------------");
 	}
 }

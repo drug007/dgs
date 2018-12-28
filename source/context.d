@@ -46,25 +46,27 @@ class Context
 	void beginLayoutBox(uint id)
 	{
 import std.stdio, std.algorithm, std.conv;
-writeln("\tbox: ", box ? box.id.text : "none");
+if (box && box.id == 5)
+	writeln(box.id, " ", box.assigned);
+// writeln("\tbox: ", box ? box.id.text : "none");
 		auto new_box = getLayoutBox(id);
 		if (box)
 			box.children.insertBack(new_box);
-if (box)
-	writeln("\tChildren: ", box.children[].map!"a.id");
-else
-	writeln("\tChildren: none");
+// if (box)
+// 	writeln("\tChildren: ", box.children[].map!"a.id");
+// else
+// 	writeln("\tChildren: none");
 
 		layout_stack.insertBack(box);
 		box = new_box;
-writeln("\tnew box: ", new_box.id, " ", new_box.assigned);
+// writeln("\tnew box: ", new_box.id, " ", new_box.assigned);
 		if (box.last_assigned != layout_tick)
 			box.assigned = BBox2();
 	}
 
 	void endLayoutBox()
 	{
-		_drawlist.strokeRect(box.assigned, Color(0xFF, 0xFF, 0xFF, 0xFF), 10.0f, 1.0f);
+		_drawlist.strokeRect(box.assigned, Color(0xFF, box.id == 5 ? 0 : 0xFF, 0xFF, 0xFF), 10.0f, 1.0f);
 		box = layout_stack[layout_stack.length - 1];
 		layout_stack.removeBack();
 	}
@@ -73,9 +75,9 @@ writeln("\tnew box: ", new_box.id, " ", new_box.assigned);
 	{
 		import std.algorithm;
 import std.stdio;
-writeln("HBox (1): ", box.assigned);
+// writeln("HBox (1): ", box.assigned);
 		beginLayoutBox(id);
-writeln("HBox (2): ", box.assigned);
+// writeln("HBox (2): ", box.assigned);
 
 		auto d = distributor(box.assigned.min.x, box.assigned.max.x, box.children[].map!"a.desired.x");
 		foreach (child; box.children)
@@ -85,11 +87,13 @@ writeln("HBox (2): ", box.assigned);
 			import std.math : isNaN;
 			// if child has no desired size then use the whole parent size
 			auto desired_y = child.desired.y.isNaN ? (box.assigned.max.y - box.assigned.min.y) : child.desired.y;
+// if (child.id == 5)
+	writefln("\t%s %s %s", box.assigned.min.y, box.assigned.max.y, desired_y);
 			auto y1 = max(box.assigned.min.y, box.assigned.max.y - desired_y);
 			auto y2 = box.assigned.max.y;
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
-import std.stdio;
-writeln("HBox (3): ", id, "\t", child.assigned, " ", box.assigned.min.x, " ", box.assigned.max.x);
+// import std.stdio;
+// writeln("HBox (3): ", id, "\t", child.assigned, " ", box.assigned.min.x, " ", box.assigned.max.x);
 			d.popFront;
 		}
 		box.children.clear();
@@ -134,14 +138,17 @@ writeln("HBox (3): ", id, "\t", child.assigned, " ", box.assigned.min.x, " ", bo
 	{
 		import std.algorithm;
 import std.stdio;
-if (box)
-	writeln("VBox (1): ", box.assigned);
-else
-	writeln("VBox (1): null");
+// if (box)
+// 	writeln("VBox (1): ", box.assigned);
+// else
+// 	writeln("VBox (1): null");
 
 		beginLayoutBox(id);
-writeln("VBox (2): ", box.assigned);
+// writeln("VBox (2): ", box.assigned);
 		auto d = distributor(box.assigned.min.y, box.assigned.max.y, box.children[].map!"a.desired.y");
+writefln("\t%s %s %s", box.assigned.min.y, box.assigned.max.y, box.children[].map!"a.desired.y");
+writefln("\t%s %s %s", box.assigned.min.y, box.assigned.max.y, box.children[].map!"a.id");
+writefln("\t%s", d);
 		foreach (child; box.children)
 		{
 			auto y1 = cast(int) d.front[0];
@@ -152,7 +159,7 @@ writeln("VBox (2): ", box.assigned);
 			auto desired_x = child.desired.x.isNaN ? (box.assigned.max.x - box.assigned.min.x) : child.desired.x;
 			auto x2 = min(box.assigned.max.x, box.assigned.min.x + desired_x);
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
-writeln("VBox (3): ", id, "\t", child.assigned, " ", box.assigned, " ", box.assigned.max.x, " ", box.assigned.min.x, " ", child.desired.x);
+// writeln("VBox (3): ", id, "\t", child.assigned, " ", box.assigned, " ", box.assigned.max.x, " ", box.assigned.min.x, " ", child.desired.x);
 			d.popFront;
 		}
 		box.children.clear();
