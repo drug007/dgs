@@ -43,6 +43,8 @@ class UI : Context
 		import std.algorithm : min, max;
 		beginLayoutBox(id);
 		BBox2 r = box.assigned;
+import std.stdio;
+writeln(id, " ", r);
 		r.max.x = min(r.max.x, r.min.x + w.width);
 		r.max.y = min(r.max.y, r.min.y + w.height);
 		if (r.contains(input.mousePos))
@@ -68,9 +70,9 @@ class UI : Context
 		if (w1.visible) leaf(1, w1);
 		if (w2.visible) leaf(2, w2);
 		endHBox();
-		// beginHBox(5);
-		// if (w3.visible) leaf(3, w3);
-		// endHBox();
+		beginHBox(5);
+		if (w3.visible) leaf(3, w3);
+		endHBox();
 		endVBox();
 	}
 }
@@ -225,5 +227,9 @@ int main(string[] args)
 		backend.present;
 
 		window.swapBuffers();
+
+		static size_t counter;
+		if (counter++ > 3)
+			return 0;
 	}
 }

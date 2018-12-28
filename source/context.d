@@ -45,12 +45,19 @@ class Context
 
 	void beginLayoutBox(uint id)
 	{
+import std.stdio, std.algorithm, std.conv;
+writeln("\tbox: ", box ? box.id.text : "none");
 		auto new_box = getLayoutBox(id);
 		if (box)
 			box.children.insertBack(new_box);
+if (box)
+	writeln("\tChildren: ", box.children[].map!"a.id");
+else
+	writeln("\tChildren: none");
 
 		layout_stack.insertBack(box);
 		box = new_box;
+writeln("\tnew box: ", new_box.id, " ", new_box.assigned);
 		if (box.last_assigned != layout_tick)
 			box.assigned = BBox2();
 	}
@@ -65,8 +72,11 @@ class Context
 	void beginHBox(uint id)
 	{
 		import std.algorithm;
-
+import std.stdio;
+writeln("HBox (1): ", box.assigned);
 		beginLayoutBox(id);
+writeln("HBox (2): ", box.assigned);
+
 		auto d = distributor(box.assigned.min.x, box.assigned.max.x, box.children[].map!"a.desired.x");
 		foreach (child; box.children)
 		{
@@ -78,6 +88,8 @@ class Context
 			auto y1 = max(box.assigned.min.y, box.assigned.max.y - desired_y);
 			auto y2 = box.assigned.max.y;
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
+import std.stdio;
+writeln("HBox (3): ", id, "\t", child.assigned, " ", box.assigned.min.x, " ", box.assigned.max.x);
 			d.popFront;
 		}
 		box.children.clear();
@@ -121,8 +133,14 @@ class Context
 	void beginVBox(uint id)
 	{
 		import std.algorithm;
+import std.stdio;
+if (box)
+	writeln("VBox (1): ", box.assigned);
+else
+	writeln("VBox (1): null");
 
 		beginLayoutBox(id);
+writeln("VBox (2): ", box.assigned);
 		auto d = distributor(box.assigned.min.y, box.assigned.max.y, box.children[].map!"a.desired.y");
 		foreach (child; box.children)
 		{
@@ -134,6 +152,7 @@ class Context
 			auto desired_x = child.desired.x.isNaN ? (box.assigned.max.x - box.assigned.min.x) : child.desired.x;
 			auto x2 = min(box.assigned.max.x, box.assigned.min.x + desired_x);
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
+writeln("VBox (3): ", id, "\t", child.assigned, " ", box.assigned, " ", box.assigned.max.x, " ", box.assigned.min.x, " ", child.desired.x);
 			d.popFront;
 		}
 		box.children.clear();
