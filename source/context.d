@@ -72,7 +72,10 @@ class Context
 		{
 			auto x1 = cast(int) d.front[0];
 			auto x2 = cast(int) d.front[1];
-			auto y1 = max(box.assigned.min.y, box.assigned.max.y - child.desired.y);
+			import std.math : isNaN;
+			// if child has no desired size then use the whole parent size
+			auto desired_y = child.desired.y.isNaN ? (box.assigned.max.y - box.assigned.min.y) : child.desired.y;
+			auto y1 = max(box.assigned.min.y, box.assigned.max.y - desired_y);
 			auto y2 = box.assigned.max.y;
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
 			d.popFront;
@@ -126,7 +129,10 @@ class Context
 			auto y1 = cast(int) d.front[0];
 			auto y2 = cast(int) d.front[1];
 			auto x1 = box.assigned.min.x;
-			auto x2 = min(box.assigned.max.x, box.assigned.min.x + child.desired.x);
+			import std.math : isNaN;
+			// if child has no desired size then use the whole parent size
+			auto desired_x = child.desired.x.isNaN ? (box.assigned.max.x - box.assigned.min.x) : child.desired.x;
+			auto x2 = min(box.assigned.max.x, box.assigned.min.x + desired_x);
 			child.assigned = BBox2(Vec2(x1, y1), Vec2(x2, y2));
 			d.popFront;
 		}

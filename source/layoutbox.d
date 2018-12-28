@@ -40,6 +40,8 @@ class LayoutBox
 		if (v != _desired)
 		{
 			_desired = v;
+			// if during current layouting `desired` was called once again
+			// with other arguments then it means that layout has to be recalculated
 			if (_last_desired == _parent.layout_tick)
 				_parent.layout_invalidated = true;
 		}

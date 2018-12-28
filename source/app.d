@@ -59,13 +59,16 @@ class UI : Context
 
 	void draw()
 	{
+		assert(layout_stack.empty);
 		LayoutBox root = getLayoutBox(0);
 		root.assigned = BBox2(Vec2(50, 50), Vec2(500, 400));
 
 		beginVBox(0);
+		beginHBox(4);
 		if (w1.visible) leaf(1, w1);
 		if (w2.visible) leaf(2, w2);
 		if (w3.visible) leaf(3, w3);
+		endHBox();
 		endVBox();
 	}
 }
