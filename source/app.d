@@ -61,14 +61,16 @@ class UI : Context
 	{
 		assert(layout_stack.empty);
 		LayoutBox root = getLayoutBox(0);
-		root.assigned = BBox2(Vec2(50, 50), Vec2(500, 400));
+		root.assigned = BBox2(Vec2(50, 500), Vec2(500, 700));
 
 		beginVBox(0);
 		beginHBox(4);
 		if (w1.visible) leaf(1, w1);
 		if (w2.visible) leaf(2, w2);
-		if (w3.visible) leaf(3, w3);
 		endHBox();
+		// beginHBox(5);
+		// if (w3.visible) leaf(3, w3);
+		// endHBox();
 		endVBox();
 	}
 }
@@ -77,8 +79,8 @@ int growth = 10;
 
 int main(string[] args)
 {
-	auto width  = 640;
-	auto height = 480;
+	auto width  = 1200;
+	auto height = 800;
 
 	auto window = new Window(width, height);
 	scope(exit) window.destroy;
